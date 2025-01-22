@@ -1,4 +1,4 @@
-local Novauilib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ehehhdrhdhehehhehendducucuh/Novauilib/refs/heads/main/OpenSourcelib.lua"))()
+local Novauilib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ehehhdrhdhehehhehendducucuh/Novauilib/refs/heads/main/OpenSourcelib.lua.txt"))()
 
 
 -- examples
