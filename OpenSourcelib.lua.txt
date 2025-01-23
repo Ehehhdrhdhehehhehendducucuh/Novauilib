@@ -16,10 +16,7 @@ function Novauilib:CreateTab(Text)
     Frame.Draggable = true
     Frame.Parent = gui
 
-    local F = Instance.new("UICorner")
-    F.CornerRadius = UDim.new(0, 4)
-    F.Parent = Frame
-
+ 
 
     local Smth = Instance.new("TextLabel")
     Smth.Size = UDim2.new(1, 0, 0, 38.5)
