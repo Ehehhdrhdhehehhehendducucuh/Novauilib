@@ -1,12 +1,8 @@
---[[
- do NOT skid this
-]]
-
 local Novauilib = {}
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "gui"
-gui.Parent = game.CoreGui
+gui.Parent = game:GetService("CoreGui")
 
 function Novauilib:CreateTab(Text)
     local Frame = Instance.new("Frame")
@@ -19,6 +15,11 @@ function Novauilib:CreateTab(Text)
     Frame.BackgroundTransparency = 0
     Frame.Draggable = true
     Frame.Parent = gui
+
+    local F = Instance.new("UICorner")
+    F.CornerRadius = UDim.new(0, 4)
+    F.Parent = Frame
+
 
     local Smth = Instance.new("TextLabel")
     Smth.Size = UDim2.new(1, 0, 0, 38.5)
@@ -50,7 +51,7 @@ function Novauilib:CreateTab(Text)
     ScrollingFrame.Position = UDim2.new(0, 5, 0, 45)
     ScrollingFrame.BackgroundColor3 = Color3.fromRGB(85, 85, 85)
     ScrollingFrame.BorderSizePixel = 0
-    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
     ScrollingFrame.ScrollBarThickness = 6
     ScrollingFrame.Parent = Frame
 
@@ -60,8 +61,9 @@ function Novauilib:CreateTab(Text)
     UIListLayout.Parent = ScrollingFrame
 
     UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
+    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
     end)
+
 
     local UIStroke = Instance.new("UIStroke")
     UIStroke.Color = Color3.fromRGB(64, 64, 64)
@@ -76,7 +78,7 @@ function Novauilib:CreateTab(Text)
         end
     end)
 
-    return ScrollingFrame
+    return Frame, ScrollingFrame
 end
 
 function Novauilib:CreateBox(PlaceHolder, Parent, Callback)
@@ -91,7 +93,11 @@ Box.TextColor3 = Color3.new(1, 1, 1)
 Box.BackgroundTransparency = 0
 Box.Font = Enum.Font.SourceSans
 Box.TextSize = 15
-Box.Parent = Parent or Frame
+if not Parent then
+      warn("Parent not provided; element not added.")
+      return nil
+end
+Box.Parent = Parent
 
 
 local b = Instance.new("UICorner")
@@ -112,7 +118,7 @@ TextButton.BackgroundColor3 = Color3.fromRGB(45,45,45)
 TextButton.BorderSizePixel = 0
 TextButton.Text = Text or "Smth"
 TextButton.BackgroundTransparency = 0 
-TextButton.TextColor3 = Color3.new(255, 255, 255)
+TextButton.TextColor3 = Color3.new(1, 1, 1)
 TextButton.TextSize = 11.5
 TextButton.Font = Font or Enum.Font.FredokaOne
 TextButton.Parent = Parent
@@ -179,10 +185,10 @@ Frame_2:TweenPosition(UDim2.new(2, 0, 0.7, 0), "InOut", "Quad", 2, true, functio
 Frame_2:Destroy()
    end)
 end)
-return Frame
+return Frame_2
 end
 
-function Novauilib:CreateToggle(Text, Parent, CallBack)
+function Novauilib:CreateToggle(Text, Parent, CallBack, InitialState)
     local ToggleFrame = Instance.new("Frame")
     ToggleFrame.Size = UDim2.new(1, -10, 0, 30)
     ToggleFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
@@ -214,7 +220,7 @@ function Novauilib:CreateToggle(Text, Parent, CallBack)
     UICorner.CornerRadius = UDim.new(1, 0)
     UICorner.Parent = ToggleButton
 
-    local toggled = false
+    local toggled = InitialState or false
     ToggleButton.MouseButton1Click:Connect(function()
         toggled = not toggled
         ToggleButton.BackgroundColor3 = toggled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(100, 100, 100)
@@ -225,3 +231,5 @@ function Novauilib:CreateToggle(Text, Parent, CallBack)
 
     return ToggleFrame
 end
+
+return Novauilib
