@@ -48,6 +48,7 @@ function Novauilib:CreateTab(Text)
     ScrollingFrame.Position = UDim2.new(0, 5, 0, 45)
     ScrollingFrame.BackgroundColor3 = Color3.fromRGB(85, 85, 85)
     ScrollingFrame.BorderSizePixel = 0
+    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
     ScrollingFrame.ScrollBarThickness = 6
     ScrollingFrame.Parent = Frame
 
@@ -59,11 +60,14 @@ function Novauilib:CreateTab(Text)
     local function updateCanvasSize()
     if ScrollingFrame and UIListLayout then
         local contentHeight = UIListLayout.AbsoluteContentSize.Y
-        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight + 10)
+        local padding = UIListLayout.Padding.Offset
+        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight + padding)
     end
 end
 
-UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvasSize)
+ScrollingFrame.ChildAdded:Connect(updateCanvasSize)
+ScrollingFrame.ChildRemoved:Connect(updateCanvasSize)
+
 task.defer(updateCanvasSize)
 
     local UIStroke = Instance.new("UIStroke")
