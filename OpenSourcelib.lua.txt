@@ -60,14 +60,11 @@ function Novauilib:CreateTab(Text)
     local function updateCanvasSize()
     if ScrollingFrame and UIListLayout then
         local contentHeight = UIListLayout.AbsoluteContentSize.Y
-        local padding = UIListLayout.Padding.Offset
-        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight + padding)
+        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight + 10)
     end
 end
 
 UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvasSize)
-
--- Initial Update
 task.defer(updateCanvasSize)
 
     local UIStroke = Instance.new("UIStroke")
