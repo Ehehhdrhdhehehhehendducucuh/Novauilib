@@ -57,17 +57,18 @@ function Novauilib:CreateTab(Text)
     UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
     UIListLayout.Parent = ScrollingFrame
 
-    UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    local function updateCanvasSize()
     if ScrollingFrame and UIListLayout then
-        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
+        local contentHeight = UIListLayout.AbsoluteContentSize.Y
+        local padding = UIListLayout.Padding.Offset
+        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight + padding)
     end
-end)
+end
 
-    task.defer(function()
-    if ScrollingFrame and UIListLayout then
-        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
-    end
-end)
+UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvasSize)
+
+-- Initial Update
+task.defer(updateCanvasSize)
 
     local UIStroke = Instance.new("UIStroke")
     UIStroke.Color = Color3.fromRGB(64, 64, 64)
