@@ -61,8 +61,16 @@ function Novauilib:CreateTab(Text)
     UIListLayout.Parent = ScrollingFrame
 
     UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
-    end)
+    if ScrollingFrame and UIListLayout then
+        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
+    end
+end)
+
+task.defer(function()
+    if ScrollingFrame and UIListLayout then
+        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
+    end
+end)
 
 
     local UIStroke = Instance.new("UIStroke")
