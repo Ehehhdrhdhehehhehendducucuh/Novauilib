@@ -9,23 +9,20 @@ function Novauilib:CreateTab(Text)
     Frame.Size = UDim2.new(0, 250, 0, 300)
     Frame.Position = UDim2.new(0.5, -125, 0.5, -150)
     Frame.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-    Frame.BorderColor3 = Color3.new(0, 0, 0)
     Frame.BorderSizePixel = 0
     Frame.Active = true
-    Frame.BackgroundTransparency = 0
     Frame.Draggable = true
     Frame.Parent = gui
 
- 
+    local F = Instance.new("UICorner")
+    F.CornerRadius = UDim.new(0, 4)
+    F.Parent = Frame
 
     local Smth = Instance.new("TextLabel")
     Smth.Size = UDim2.new(1, 0, 0, 38.5)
     Smth.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
-    Smth.BorderColor3 = Color3.new(0, 0, 0)
-    Smth.BorderSizePixel = 0
     Smth.TextScaled = true
     Smth.Text = Text or "Untitled Tab"
-    Smth.BackgroundTransparency = 0
     Smth.TextColor3 = Color3.new(1, 1, 1)
     Smth.Font = Enum.Font.SourceSans
     Smth.Parent = Frame
@@ -34,11 +31,8 @@ function Novauilib:CreateTab(Text)
     Close.Size = UDim2.new(0, 25, 0, 15)
     Close.Position = UDim2.new(0.855, 0, 0.01, 0)
     Close.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
-    Close.BorderColor3 = Color3.new(0, 0, 0)
-    Close.BorderSizePixel = 0
     Close.TextScaled = true
     Close.Text = "+"
-    Close.BackgroundTransparency = 0
     Close.TextColor3 = Color3.new(1, 1, 1)
     Close.Font = Enum.Font.SourceSans
     Close.Parent = Frame
@@ -57,18 +51,9 @@ function Novauilib:CreateTab(Text)
     UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
     UIListLayout.Parent = ScrollingFrame
 
-    local function updateCanvasSize()
-    if ScrollingFrame and UIListLayout then
-        local contentHeight = UIListLayout.AbsoluteContentSize.Y
-        local padding = UIListLayout.Padding.Offset
-        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight + padding)
-    end
-end
-
-ScrollingFrame.ChildAdded:Connect(updateCanvasSize)
-ScrollingFrame.ChildRemoved:Connect(updateCanvasSize)
-
-task.defer(updateCanvasSize)
+    UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
+    end)
 
     local UIStroke = Instance.new("UIStroke")
     UIStroke.Color = Color3.fromRGB(64, 64, 64)
@@ -76,121 +61,102 @@ task.defer(updateCanvasSize)
     UIStroke.Parent = Frame
 
     Close.MouseButton1Click:Connect(function()
-        if Frame.Size == UDim2.new(0, 250, 0, 300) then
-            Frame:TweenSize(UDim2.new(0, 250, 0, 50), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, 0.5)
-        else
-            Frame:TweenSize(UDim2.new(0, 250, 0, 300), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, 0.5)
-        end
+        local targetSize = Frame.Size == UDim2.new(0, 250, 0, 300) and UDim2.new(0, 250, 0, 50) or UDim2.new(0, 250, 0, 300)
+        Frame:TweenSize(targetSize, Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, 0.5, true)
     end)
 
     return Frame, ScrollingFrame
 end
 
 function Novauilib:CreateBox(PlaceHolder, Parent, Callback)
-local Box  = Instance.new("TextBox")
-Box.Size = UDim2.new(1, -10, 0, 30)
-Box.BackgroundColor3 = Color3.fromRGB(35,35,35)
-Box.BorderColor3 = Color3.new(0, 0, 0)
-Box.BorderSizePixel = 1
-Box.PlaceholderText = PlaceHolder
-Box.Text = ""
-Box.TextColor3 = Color3.new(1, 1, 1)
-Box.BackgroundTransparency = 0
-Box.Font = Enum.Font.SourceSans
-Box.TextSize = 15
-if not Parent then
-      warn("Parent not provided; element not added.")
-      return nil
-end
-Box.Parent = Parent
+    if not Parent then
+        warn("Parent not provided; element not added.")
+        return nil
+    end
 
+    local Box = Instance.new("TextBox")
+    Box.Size = UDim2.new(1, -10, 0, 30)
+    Box.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    Box.PlaceholderText = PlaceHolder or ""
+    Box.Text = ""
+    Box.TextColor3 = Color3.new(1, 1, 1)
+    Box.Font = Enum.Font.SourceSans
+    Box.TextSize = 15
+    Box.Parent = Parent
 
-local b = Instance.new("UICorner")
-b.CornerRadius = UDim.new(0, 4)
-b.Parent = Box
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 4)
+    UICorner.Parent = Box
 
-if Callback then
-Box:GetPropertyChangedSignal("Text"):Connect(Callback)
-end
+    if Callback then
+        Box:GetPropertyChangedSignal("Text"):Connect(Callback)
+    end
 
-return Box
+    return Box
 end
 
-function Novauilib:Createbtn(Text, Font, Parent, CallBack)
-local TextButton = Instance.new("TextButton")
-TextButton.Size = UDim2.new(1, -10, 0, 30)
-TextButton.BackgroundColor3 = Color3.fromRGB(45,45,45)
-TextButton.BorderSizePixel = 0
-TextButton.Text = Text or "Smth"
-TextButton.BackgroundTransparency = 0 
-TextButton.TextColor3 = Color3.new(1, 1, 1)
-TextButton.TextSize = 11.5
-TextButton.Font = Font or Enum.Font.FredokaOne
-TextButton.Parent = Parent
+function Novauilib:Createbtn(Text, Font, Parent, Callback)
+    if not Parent then
+        warn("Parent not provided; button not created.")
+        return nil
+    end
 
-if CallBack then
-TextButton.MouseButton1Click:Connect(CallBack)
-end
+    local Button = Instance.new("TextButton")
+    Button.Size = UDim2.new(1, -10, 0, 30)
+    Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    Button.Text = Text or "Button"
+    Button.TextColor3 = Color3.new(1, 1, 1)
+    Button.TextSize = 11.5
+    Button.Font = Font or Enum.Font.FredokaOne
+    Button.Parent = Parent
 
-local U = Instance.new("UICorner")
-U.CornerRadius = UDim.new(0, 4)
-U.Parent = TextButton
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 4)
+    UICorner.Parent = Button
 
-return TextButton
+    if Callback then
+        Button.MouseButton1Click:Connect(Callback)
+    end
+
+    return Button
 end
 
 function Novauilib:SendNotify(Text, Image)
-local Frame_2 = Instance.new("Frame")
-Frame_2.Size = UDim2.new(0, 200, 0, 45)
-Frame_2.Position = UDim2.new(2, 0, 0.7, 0)
-Frame_2.BackgroundColor3 = Color3.fromRGB(45,45,45)
-Frame_2.BorderSizePixel = 0
-Frame_2.BackgroundTransparency = 0 
-Frame_2.Parent = gui
+    local Frame = Instance.new("Frame")
+    Frame.Size = UDim2.new(0, 200, 0, 45)
+    Frame.Position = UDim2.new(2, 0, 0.7, 0)
+    Frame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    Frame.BorderSizePixel = 0
+    Frame.Parent = gui
 
-local ImageLabel = Instance.new("ImageLabel")
-ImageLabel.Size = UDim2.new(0, 35, 0, 35)
-ImageLabel.Position = UDim2.new(0.05, 0, 0.14, 0)
-ImageLabel.BackgroundColor3 = Color3.new(0, 0, 0)
-ImageLabel.Image = Image
-ImageLabel.BorderSizePixel = 0
-ImageLabel.ImageColor3 = Color3.new(1, 1, 1)
-ImageLabel.ImageTransparency = 0
-ImageLabel.ScaleType = Enum.ScaleType.Stretch
-ImageLabel.Parent = Frame_2
-ImageLabel.BackgroundTransparency = 1
+    local ImageLabel = Instance.new("ImageLabel")
+    ImageLabel.Size = UDim2.new(0, 35, 0, 35)
+    ImageLabel.Position = UDim2.new(0.05, 0, 0.14, 0)
+    ImageLabel.Image = Image or ""
+    ImageLabel.BackgroundTransparency = 1
+    ImageLabel.Parent = Frame
 
-local Ui = Instance.new("UIStroke")
-Ui.Color = Color3.fromRGB(100,100,100)
-Ui.Thickness = 1.45
-Ui.Parent = Frame_2
+    local TextLabel = Instance.new("TextLabel")
+    TextLabel.Size = UDim2.new(0.7, 0, 1, 0)
+    TextLabel.Position = UDim2.new(0.25, 0, 0, 0)
+    TextLabel.Text = Text or "Notification"
+    TextLabel.TextColor3 = Color3.new(1, 1, 1)
+    TextLabel.Font = Enum.Font.FredokaOne
+    TextLabel.BackgroundTransparency = 1
+    TextLabel.Parent = Frame
 
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 5)
+    UICorner.Parent = Frame
 
-local NotifText = Instance.new("TextLabel")
-NotifText.Size = UDim2.new(0, 45, 0, 45)
-NotifText.Position = UDim2.new(0.4, 0, 0, 0)
-NotifText.TextSize = 14.5
-NotifText.BackgroundColor3 = Color3.fromRGB(220,220,220)
-NotifText.BorderColor3 = Color3.new(0, 0, 0)
-NotifText.BorderSizePixel = 0
-NotifText.Text = Text
-NotifText.TextTransparency = 0.275
-NotifText.BackgroundTransparency = 1
-NotifText.TextColor3 = Color3.new(255, 255, 255)
-NotifText.Font = Enum.Font.FredokaOne
-NotifText.Parent = Frame_2
+    Frame:TweenPosition(UDim2.new(0.675, 0, 0.7, 0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, 2, true, function()
+        task.wait(2)
+        Frame:TweenPosition(UDim2.new(2, 0, 0.7, 0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, 2, true, function()
+            Frame:Destroy()
+        end)
+    end)
 
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 5.75)
-UICorner.Parent = Frame_2
-
-Frame_2:TweenPosition(UDim2.new(0.675, 0, 0.7, 0), "InOut", "Quad", 2, true, function()
-task.wait(2)
-Frame_2:TweenPosition(UDim2.new(2, 0, 0.7, 0), "InOut", "Quad", 2, true, function()
-Frame_2:Destroy()
-   end)
-end)
-return Frame_2
+    return Frame
 end
 
 function Novauilib:CreateToggle(Text, Parent, CallBack, InitialState)
