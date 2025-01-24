@@ -14,14 +14,11 @@ function Novauilib:CreateTab(Text)
     Frame.Draggable = true
     Frame.Parent = gui
 
-    local F = Instance.new("UICorner")
-    F.CornerRadius = UDim.new(0, 4)
-    F.Parent = Frame
-
     local Smth = Instance.new("TextLabel")
     Smth.Size = UDim2.new(1, 0, 0, 38.5)
     Smth.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
     Smth.TextScaled = true
+    Smth.BorderSizePixel = 0
     Smth.Text = Text or "Untitled Tab"
     Smth.TextColor3 = Color3.new(1, 1, 1)
     Smth.Font = Enum.Font.SourceSans
@@ -51,9 +48,11 @@ function Novauilib:CreateTab(Text)
     UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
     UIListLayout.Parent = ScrollingFrame
 
-    UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    game:GetService("RunService").RenderStepped:Connect(function()
+    if ScrollingFrame and UIListLayout then
         ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
-    end)
+    end
+end)
 
     local UIStroke = Instance.new("UIStroke")
     UIStroke.Color = Color3.fromRGB(64, 64, 64)
